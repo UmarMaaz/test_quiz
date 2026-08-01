@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IM Sciences Entry Test — Practice Bank</title>
+<style>
+  :root{
+    --ink:#14213d;
+    --ink-soft:#3a4a72;
+    --paper:#f6f3ea;
+    --paper-line:#e3ddc9;
+    --grade:#c1440e;
+    --grade-soft:#f2d9c9;
+    --good:#2f6e4f;
+    --good-bg:#e2efe3;
+    --bad:#a8321f;
+    --bad-bg:#f6e2df;
+    --quant:#1e5c8c;
+    --verbal:#7a5a2e;
+    --analytical:#c1440e;
+    --mono: 'Courier New', Courier, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--paper-line) 1px, transparent 1px) 0 0/100% 34px,
+      var(--paper);
+    color:var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .sheet{
+    max-width:760px;
+    margin:0 auto;
+    background:transparent;
+  }
+  .masthead{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:10px;
+    margin-bottom:6px;
+  }
+  .masthead h1{
+    font-size:1.5rem;
+    letter-spacing:0.02em;
+    margin:0;
+    font-weight:700;
+  }
+  .masthead .stamp{
+    font-family: var(--mono);
+    font-size:0.72rem;
+    color:var(--grade);
+    border:1.5px solid var(--grade);
+    padding:3px 8px;
+    transform: rotate(-3deg);
+    white-space:nowrap;
+  }
+  .subline{
+    font-family: var(--mono);
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    margin-bottom:26px;
+    letter-spacing:0.02em;
+  }
+
+  /* ---------- SETUP SCREEN ---------- */
+  .setup-card{
+    background:#fffdf8;
+    border:1px solid var(--paper-line);
+    box-shadow: 6px 6px 0 var(--paper-line);
+    padding:26px 24px;
+  }
+  .setup-card h2{
+    margin-top:0;
+    font-size:1.1rem;
+  }
+  .section-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:12px;
+    margin:18px 0 22px;
+  }
+  .section-tile{
+    border:1.5px solid var(--ink);
+    padding:14px 10px;
+    text-align:center;
+    cursor:pointer;
+    background:#fff;
+    font-family: var(--mono);
+    transition: transform .12s ease;
+  }
+  .section-tile:hover{ transform: translateY(-2px); }
+  .section-tile.active{
+    background:var(--ink);
+    color:#fff;
+  }
+  .section-tile .count{
+    display:block;
+    font-size:1.4rem;
+    font-weight:bold;
+    margin-top:4px;
+  }
+  .section-tile.quant{ border-color: var(--quant); }
+  .section-tile.verbal{ border-color: var(--verbal); }
+  .section-tile.analytical{ border-color: var(--analytical); }
+  .section-tile.quant.active{ background:var(--quant); }
+  .section-tile.verbal.active{ background:var(--verbal); }
+  .section-tile.analytical.active{ background:var(--analytical); }
+
+  .row-controls{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:22px;
+    font-family: var(--mono);
+    font-size:0.85rem;
+  }
+  .row-controls label{ display:flex; align-items:center; gap:8px; }
+  select, input[type=number]{
+    font-family: var(--mono);
+    padding:4px 6px;
+    border:1px solid var(--ink);
+    background:#fff;
+  }
+  .start-btn{
+    display:block;
+    width:100%;
+    padding:14px;
+    background:var(--grade);
+    color:#fff;
+    border:none;
+    font-family: var(--mono);
+    font-size:1rem;
+    letter-spacing:0.04em;
+    cursor:pointer;
+    text-transform:uppercase;
+  }
+  .start-btn:hover{ background:#a1380c; }
+  .start-btn:disabled{ background:#c9c2ac; cursor:not-allowed; }
+  .note{
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    margin-top:10px;
+  }
+
+  /* ---------- QUIZ SCREEN ---------- */
+  .quiz-card{
+    background:#fffdf8;
+    border:1px solid var(--paper-line);
+    box-shadow: 6px 6px 0 var(--paper-line);
+    padding:22px 24px 26px;
+    display:none;
+  }
+  .quiz-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family: var(--mono);
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  .timer{
+    font-weight:bold;
+    color:var(--ink);
+    padding:2px 8px;
+    border:1px solid var(--ink);
+  }
+  .timer.low{ color:#fff; background:var(--bad); border-color:var(--bad); }
+  .progress-bar{
+    height:6px;
+    background:var(--paper-line);
+    margin-bottom:20px;
+    position:relative;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--grade);
+    width:0%;
+    transition: width .25s ease;
+  }
+  .qtag{
+    display:inline-block;
+    font-family: var(--mono);
+    font-size:0.7rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    padding:3px 8px;
+    color:#fff;
+    margin-bottom:12px;
+  }
+  .qtag.quant{ background:var(--quant); }
+  .qtag.verbal{ background:var(--verbal); }
+  .qtag.analytical{ background:var(--analytical); }
+  .qtext{
+    font-size:1.12rem;
+    line-height:1.5;
+    margin-bottom:20px;
+    white-space:pre-wrap;
+  }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+  .opt{
+    border:1.5px solid var(--ink);
+    padding:12px 14px;
+    cursor:pointer;
+    background:#fff;
+    font-size:0.98rem;
+    display:flex;
+    gap:10px;
+  }
+  .opt:hover{ background:#faf6ec; }
+  .opt .letter{ font-family: var(--mono); font-weight:bold; }
+  .opt.selected{ background:#fff3e0; border-color:var(--grade); }
+  .opt.correct{ background:var(--good-bg); border-color:var(--good); }
+  .opt.incorrect{ background:var(--bad-bg); border-color:var(--bad); }
+  .opt.disabled{ cursor:default; }
+
+  .explain{
+    display:none;
+    background:#f2efe3;
+    border-left:4px solid var(--ink);
+    padding:12px 14px;
+    font-size:0.92rem;
+    line-height:1.55;
+    margin-bottom:18px;
+    white-space:pre-wrap;
+  }
+  .explain.show{ display:block; }
+  .explain b{ color:var(--grade); }
+
+  .quiz-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .btn{
+    font-family: var(--mono);
+    padding:10px 18px;
+    border:1.5px solid var(--ink);
+    background:#fff;
+    cursor:pointer;
+    font-size:0.85rem;
+    text-transform:uppercase;
+  }
+  .btn.primary{ background:var(--ink); color:#fff; }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  /* ---------- RESULTS SCREEN ---------- */
+  .results-card{
+    background:#fffdf8;
+    border:1px solid var(--paper-line);
+    box-shadow: 6px 6px 0 var(--paper-line);
+    padding:28px 24px;
+    display:none;
+    text-align:center;
+  }
+  .score-big{
+    font-family: var(--mono);
+    font-size:3rem;
+    font-weight:bold;
+    color:var(--grade);
+    margin:6px 0 2px;
+  }
+  .score-sub{ color:var(--ink-soft); font-family: var(--mono); font-size:0.85rem; margin-bottom:24px; }
+  .breakdown{
+    text-align:left;
+    margin: 0 auto 24px;
+    max-width:440px;
+  }
+  .bd-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:12px;
+    font-family: var(--mono);
+    font-size:0.82rem;
+  }
+  .bd-label{ width:110px; text-align:right; flex-shrink:0; }
+  .bd-track{ flex:1; height:14px; background:var(--paper-line); position:relative; }
+  .bd-fill{ height:100%; }
+  .bd-fill.quant{ background:var(--quant); }
+  .bd-fill.verbal{ background:var(--verbal); }
+  .bd-fill.analytical{ background:var(--analytical); }
+  .bd-score{ width:46px; text-align:left; flex-shrink:0; }
+
+  .verdict{
+    font-size:1rem;
+    line-height:1.6;
+    max-width:520px;
+    margin: 0 auto 22px;
+    text-align:left;
+    background:#f2efe3;
+    border-left:4px solid var(--grade);
+    padding:14px 16px;
+  }
+  .results-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+  .review-toggle{
+    margin-top:22px;
+    font-family: var(--mono);
+    font-size:0.8rem;
+    text-decoration:underline;
+    cursor:pointer;
+    color:var(--ink-soft);
+  }
+  .review-list{ display:none; text-align:left; margin-top:18px; }
+  .review-item{
+    border-top:1px solid var(--paper-line);
+    padding:14px 0;
+  }
+  .review-item .qtext{ font-size:0.95rem; margin-bottom:10px; }
+  .review-item .ans-line{ font-size:0.85rem; margin-bottom:4px; font-family: var(--mono); }
+  .review-item .ans-line.wrong{ color:var(--bad); }
+  .review-item .ans-line.right{ color:var(--good); }
+  .review-item .exp{ font-size:0.85rem; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
+
+  @media (max-width:520px){
+    .section-grid{ grid-template-columns:1fr 1fr; }
+    .masthead{ flex-direction:column; align-items:flex-start; gap:8px; }
+    .score-big{ font-size:2.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="masthead">
+    <h1>Entry Test Practice Bank</h1>
+    <div class="stamp">IM SCIENCES · MS DATA SCIENCE</div>
+  </div>
+  <div class="subline">Quantitative · Verbal · Analytical Reasoning (weighted heavier) — timed, self-graded, with step-by-step explanations</div>
+
+  <!-- SETUP -->
+  <div class="setup-card" id="setupCard">
+    <h2>Build your mock test</h2>
+    <div class="section-grid" id="sectionGrid"></div>
+
+    <div class="row-controls">
+      <label>Questions: <select id="qCount"></select></label>
+      <label>Time limit: <select id="qTime">
+        <option value="0">Untimed</option>
+        <option value="1">1 min / question</option>
+        <option value="1.5" selected>90 sec / question</option>
+        <option value="2">2 min / question</option>
+      </select></label>
+    </div>
+
+    <button class="start-btn" id="startBtn">Start test</button>
+    <div class="note" id="setupNote">Analytical Reasoning is weighted higher by default, matching the real paper's 30% share and your request for extra drilling there.</div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-card" id="quizCard">
+    <div class="quiz-top">
+      <span id="qPosition">Question 1 / 15</span>
+      <span class="timer" id="timerBox">--:--</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="qtag" id="qTag">Analytical</div>
+    <div class="qtext" id="qText"></div>
+    <div class="options" id="optionsBox"></div>
+    <div class="explain" id="explainBox"></div>
+    <div class="quiz-actions">
+      <button class="btn" id="skipBtn">Skip</button>
+      <button class="btn primary" id="nextBtn" disabled>Next question →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-card" id="resultsCard">
+    <div style="font-family:var(--mono); font-size:0.8rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em;">Score</div>
+    <div class="score-big" id="scoreBig">0%</div>
+    <div class="score-sub" id="scoreSub">0 / 0 correct · 0 skipped</div>
+
+    <div class="breakdown" id="breakdown"></div>
+    <div class="verdict" id="verdict"></div>
+
+    <div class="results-actions">
+      <button class="btn primary" id="retryBtn">New mock test</button>
+      <button class="btn" id="retryWrongBtn">Redo wrong answers</button>
+    </div>
+
+    <div class="review-toggle" id="reviewToggle">Show full review ▾</div>
+    <div class="review-list" id="reviewList"></div>
+  </div>
+</div>
+
+<script>
+/* ============================ QUESTION BANK ============================ */
+const BANK = {
+quantitative: [
+{q:"A price rises 25%, then falls 20%. What is the overall change from the original price?",
+ opts:["It falls 5%","It rises 5%","No change (0%)","It falls 4.5%"], correct:2,
+ exp:"Chain the multipliers instead of adding percentages: 1.25 × 0.80 = 1.00. The two changes exactly cancel, so the final price equals the original — a 0% net change."},
+{q:"16 boys have an average weight of 50.25 kg, and 8 boys have an average weight of 45.15 kg. What is the combined average weight of all 24 boys?",
+ opts:["47.85 kg","48.55 kg","49.05 kg","46.75 kg"], correct:1,
+ exp:"Weighted average = (16×50.25 + 8×45.15) ÷ 24 = (804 + 361.2) ÷ 24 = 1165.2 ÷ 24 = 48.55 kg. Don't just average 50.25 and 45.15 — the group sizes differ, so each group's total must be weighted by its size."},
+{q:"Rs. 550 is divided in the ratio 2:3:6. What is the largest share?",
+ opts:["200","250","300","350"], correct:2,
+ exp:"The ratio parts sum to 2+3+6 = 11, so one unit = 550 ÷ 11 = 50. Shares are 100 : 150 : 300 — the largest share (6 units) is 6 × 50 = 300."},
+{q:"Cost Price = Rs. 800. The item is marked up 25%, then a 10% discount is given on the marked price. What is the final profit percent?",
+ opts:["10%","12.5%","15%","20%"], correct:1,
+ exp:"Selling Price = 800 × 1.25 × 0.9 = Rs. 900. Profit = 900 − 800 = Rs. 100. Profit% = 100 ÷ 800 × 100 = 12.5%."},
+{q:"A car covers 240 km in 4 hours. What is its speed in metres per second?",
+ opts:["13.3 m/s","15 m/s","16.67 m/s","18 m/s"], correct:2,
+ exp:"Speed = 240 ÷ 4 = 60 km/h. To convert km/h to m/s, multiply by 5/18: 60 × 5/18 ≈ 16.67 m/s."},
+{q:"Solve for x: 3x − 7 = 2x + 5",
+ opts:["x = 10","x = 11","x = 12","x = 13"], correct:2,
+ exp:"Move variable terms to one side: 3x − 2x = 5 + 7, so x = 12."},
+{q:"Solve the inequality: 5 − 2x ≥ 1",
+ opts:["x ≤ 2","x ≥ 2","x ≤ −2","x ≥ −2"], correct:0,
+ exp:"5 − 2x ≥ 1 → −2x ≥ −4. Dividing both sides by a negative number flips the inequality sign: x ≤ 2."},
+{q:"Out of 100 students, 60 like Maths, 50 like Physics, and 30 like both. How many students like neither subject?",
+ opts:["10","15","20","25"], correct:2,
+ exp:"Students who like at least one = 60 + 50 − 30 = 80 (subtracting the double-counted overlap). Students who like neither = 100 − 80 = 20."},
+{q:"A bag has 4 red balls and 6 blue balls. One ball is drawn at random. What is P(red)?",
+ opts:["1/3","2/5","1/2","3/5"], correct:1,
+ exp:"P(red) = favourable outcomes ÷ total outcomes = 4 ÷ 10 = 2/5."},
+{q:"In how many ways can 4 people be arranged in a row?",
+ opts:["12","16","24","32"], correct:2,
+ exp:"This is a permutation of all 4 items: 4! = 4×3×2×1 = 24. 'Arrange' signals permutation, where order matters."},
+{q:"Find the LCM of 18 and 24.",
+ opts:["48","60","72","96"], correct:2,
+ exp:"HCF(18,24) = 6. Since HCF × LCM = product of the numbers: LCM = (18×24) ÷ 6 = 432 ÷ 6 = 72."},
+{q:"Find the area of a triangle with base 10 and height 6.",
+ opts:["16","24","30","60"], correct:2,
+ exp:"Triangle area = ½ × base × height = ½ × 10 × 6 = 30."},
+{q:"Find the sum of the first 10 terms of the arithmetic progression 1, 3, 5, 7, ...",
+ opts:["90","95","100","105"], correct:2,
+ exp:"Common difference d = 2, first term a = 1, n = 10. Sum = n/2 × [2a + (n-1)d] = 5 × [2 + 18] = 5 × 20 = 100."}
+],
+verbal: [
+{q:"Choose the word closest in meaning to 'Meticulous':",
+ opts:["Careless","Precise","Vague","Hasty"], correct:1,
+ exp:"'Meticulous' means extremely careful and precise about details — the closest synonym is 'Precise'."},
+{q:"Choose the word opposite in meaning to 'Benevolent':",
+ opts:["Kind","Malevolent","Generous","Caring"], correct:1,
+ exp:"'Benevolent' means kind and well-meaning. Its direct opposite is 'Malevolent' (having or showing ill will)."},
+{q:"'Ephemeral' most nearly means:",
+ opts:["Permanent","Short-lived","Eternal","Ancient"], correct:1,
+ exp:"'Ephemeral' describes something that lasts for a very short time — 'Short-lived' is the closest match."},
+{q:"Choose the word opposite in meaning to 'Frugal':",
+ opts:["Thrifty","Wasteful","Careful","Stingy"], correct:1,
+ exp:"'Frugal' means careful with money/resources, i.e. not wasteful. Its opposite is 'Wasteful'."},
+{q:"Choose the grammatically correct sentence:\n'Each of the students ___ submitted their assignment.'",
+ opts:["have", "has", "having", "had"], correct:1,
+ exp:"'Each' is always treated as singular, regardless of what follows it ('of the students'). So the verb must be singular: 'has'."},
+{q:"Correct the sentence: 'Neither the manager nor the employees ___ informed.'",
+ opts:["was", "were", "is", "be"], correct:1,
+ exp:"With 'neither...nor', the verb agrees with the noun closest to it — here that's 'employees' (plural), so the correct verb is 'were'."},
+{q:"Choose the correct preposition: 'She has worked here ___ 2015.'",
+ opts:["for", "since", "from", "at"], correct:1,
+ exp:"'Since' is used with a fixed point in time (2015), while 'for' would be used with a duration (e.g. 'for 9 years')."},
+{q:"What does the idiom 'break the ice' mean?",
+ opts:["Start a fight", "Ease tension in a social situation", "Cancel a plan", "Finish something quickly"], correct:1,
+ exp:"'Break the ice' means to relieve initial awkwardness or tension, typically when people meet for the first time."},
+{q:"What does 'once in a blue moon' mean?",
+ opts:["Very often", "Very rarely", "Every night", "Never"], correct:1,
+ exp:"'Once in a blue moon' describes something that happens very rarely — not 'never', just infrequently."},
+{q:"One word for 'a person who loves books':",
+ opts:["Bibliophile", "Illiterate", "Novice", "Volunteer"], correct:0,
+ exp:"'Bibliophile' specifically means a person who loves and collects books."},
+{q:"One word for 'fear of enclosed spaces':",
+ opts:["Agoraphobia", "Claustrophobia", "Acrophobia", "Xenophobia"], correct:1,
+ exp:"'Claustrophobia' is the fear of confined or enclosed spaces. (Agoraphobia = fear of open/crowded spaces; Acrophobia = fear of heights; Xenophobia = fear/dislike of strangers.)"},
+{q:"Complete the analogy: Pen is to Write as Knife is to ___?",
+ opts:["Sharp", "Cut", "Kitchen", "Metal"], correct:1,
+ exp:"The relationship is 'a tool and the action it performs'. A pen is used to write; a knife is used to cut."},
+{q:"Complete the analogy: Bird is to Nest as Bee is to ___?",
+ opts:["Flower", "Hive", "Sting", "Honey"], correct:1,
+ exp:"The relationship is 'a creature and where it lives'. A bird lives in a nest; a bee lives in a hive."}
+],
+analytical: [
+{q:"Eight people sit in a row of 8 seats (1 to 8, left to right). N is third from the left. O is third from the right. How many people sit between N and O?",
+ opts:["1","2","3","4"], correct:1,
+ exp:"Third from the left = seat 3, so N = seat 3. Third from the right in 8 seats = seat (8−3+1) = seat 6, so O = seat 6. The seats between them are seat 4 and seat 5 — that's 2 people."},
+{q:"Five people sit in a row, seats 1-5. X is at the extreme left. Z is immediately left of W, and Z sits between X and W. V is immediately right of W. Who sits in seat 2?",
+ opts:["Y", "Z", "W", "V"], correct:0,
+ exp:"X = seat 1. Z immediately left of W, and between X and W, only fits at Z=3, W=4. V (right of W) = seat 5. That leaves seat 2 for the only person unplaced — Y."},
+{q:"Six friends A, B, C, D, E, F sit around a round table facing the centre. B sits opposite D. A sits immediately to the right of B. C sits immediately to the left of D. Who sits immediately to the right of B?",
+ opts:["C", "D", "A", "F"], correct:2,
+ exp:"Place B at seat 1; opposite (3 seats apart in a 6-seat table) puts D at seat 4. Facing the centre, 'immediate right' means the next seat clockwise, so A (right of B) sits at seat 2 — directly next to B."},
+{q:"Statements: All roses are flowers. Some flowers fade quickly. Conclusion: 'Some roses fade quickly.'",
+ opts:["Valid", "Invalid", "Cannot be determined", "Only the converse is valid"], correct:1,
+ exp:"The 'some flowers fade quickly' group is only part of all flowers and could consist entirely of non-rose flowers. Nothing forces an overlap with roses, so the conclusion doesn't necessarily follow — Invalid."},
+{q:"Statements: No reptiles are birds. All snakes are reptiles. Conclusion: 'No snakes are birds.'",
+ opts:["Valid", "Invalid", "Cannot be determined", "Only the converse is valid"], correct:0,
+ exp:"Snakes are entirely inside the 'reptiles' group, and reptiles as a whole never overlap birds. So snakes, being a subset of reptiles, can never overlap birds either — Valid."},
+{q:"Statements: Some artists are musicians. All musicians are creative. Conclusion: 'Some artists are creative.'",
+ opts:["Valid", "Invalid", "Cannot be determined", "Only the converse is valid"], correct:0,
+ exp:"The artists who are also musicians form a real overlap group. Every musician is creative with no exceptions, so that overlap group must be creative too — meaning some artists are creative. Valid."},
+{q:"Statements: Some teachers are athletes. No athletes are lazy. Conclusion: 'Some teachers are not lazy.'",
+ opts:["Valid", "Invalid", "Cannot be determined", "Only the converse is valid"], correct:0,
+ exp:"The teachers who are also athletes form a real overlap group, and none of them are lazy (since no athletes are lazy). That overlap group is a subset of teachers, so at least some teachers are confirmed not lazy — Valid."},
+{q:"Find the next number: 4, 9, 19, 39, 79, ?",
+ opts:["149", "159", "169", "179"], correct:1,
+ exp:"Each term follows: previous × 2 + 1 (4×2+1=9, 9×2+1=19, 19×2+1=39, 39×2+1=79). Applying it once more: 79×2+1 = 159."},
+{q:"Find the next number: 5, 10, 20, 35, 55, ?",
+ opts:["70", "75", "80", "85"], correct:2,
+ exp:"Differences are 5, 10, 15, 20 — increasing by 5 each time. The next difference is 25, so 55 + 25 = 80."},
+{q:"Find the missing number: 2, 5, 10, 17, 26, __, 50",
+ opts:["33", "35", "37", "39"], correct:2,
+ exp:"Differences increase by 2 each time: 3, 5, 7, 9, so the next difference is 11 → 26+11 = 37. Check forward: the following difference is 13 → 37+13 = 50, which matches."},
+{q:"Find the next number: 1, 1, 2, 3, 5, 8, 13, ?",
+ opts:["18", "19", "20", "21"], correct:3,
+ exp:"This is the Fibonacci pattern — each term is the sum of the two before it. 8 + 13 = 21."},
+{q:"Find the number that does not belong: 8, 27, 64, 100, 125",
+ opts:["27", "64", "100", "125"], correct:2,
+ exp:"8, 27, 64, and 125 are perfect cubes (2³, 3³, 4³, 5³). 100 is a perfect square (10²), not a cube — it's the odd one out."},
+{q:"Find the next number: 100, 90, 81, 73, 66, ?",
+ opts:["58", "59", "60", "61"], correct:2,
+ exp:"The amounts subtracted decrease by 1 each time: 10, 9, 8, 7 — so the next subtraction is 6. 66 − 6 = 60."},
+{q:"If FRIEND is coded as GSJFOE, how is CANDLE written in the same code?",
+ opts:["DBOEMF", "DBOEMG", "DBPEMF", "DCOEMF"], correct:0,
+ exp:"Every letter in FRIEND shifts forward by exactly 1 (F→G, R→S, I→J, E→F, N→O, D→E). Applying +1 to CANDLE: C→D, A→B, N→O, D→E, L→M, E→F → DBOEMF."},
+{q:"In a code, each letter is replaced by its mirror letter (A↔Z, B↔Y, C↔X...). How is CAT written in this code?",
+ opts:["XZG", "XZH", "YZG", "XYG"], correct:0,
+ exp:"Mirror pairs position p with (27−p). C=3→24=X. A=1→26=Z. T=20→7=G. So CAT becomes XZG."},
+{q:"If each letter is coded by its position in the alphabet (A=1, B=2, ... Z=26), what is the code for BAG?",
+ opts:["2 1 7", "2 1 6", "1 2 7", "2 3 7"], correct:0,
+ exp:"B is the 2nd letter, A is the 1st, G is the 7th — so the code is 2 1 7."},
+{q:"If DELHI is coded as EFMIJ (each letter shifted forward by 1), what does TVOEBZ decode to?",
+ opts:["MONDAY", "SUNDAY", "FRIDAY", "SATURDAY"], correct:1,
+ exp:"Since the code shifts each letter forward by 1, decoding shifts each letter back by 1: T→S, V→U, O→N, E→D, B→A, Z→Y → SUNDAY."},
+{q:"Pointing to a photograph, a man says, 'She is the daughter of my father's only son.' How is the woman related to the man?",
+ opts:["His sister", "His daughter", "His cousin", "His niece"], correct:1,
+ exp:"'My father's only son' is a roundabout way of referring to the man himself. So the sentence really means 'She is the daughter of myself' — she is his daughter."},
+{q:"A is B's brother. C is B's mother. D is C's father. How is A related to D?",
+ opts:["Son", "Grandson", "Father", "Nephew"], correct:1,
+ exp:"C is B's mother, and since A is B's sibling, C is also A's mother. D is C's father — so D is the father of A's mother, meaning D is A's maternal grandfather, and A is D's grandson."},
+{q:"Introducing a boy, a girl says, 'He is the son of my mother's only daughter.' Who is the boy to the girl?",
+ opts:["Her brother", "Her son", "Her nephew", "Her cousin"], correct:1,
+ exp:"'My mother's only daughter' refers to the girl herself. So the sentence means 'He is the son of myself' — he is her son."},
+{q:"Looking at a man, a woman says, 'His mother is the only daughter of my father.' How is the woman related to the man?",
+ opts:["His aunt", "His mother", "His grandmother", "His sister"], correct:1,
+ exp:"'The only daughter of my father' refers to the woman herself. So 'his mother is myself' — the woman is the man's mother."},
+{q:"A man walks 10 km North, turns right and walks 6 km, then turns right again and walks 10 km. How far is he from the starting point, and in which direction?",
+ opts:["6 km East", "10 km North", "16 km East", "6 km West"], correct:0,
+ exp:"North 10 km, then right turn = East 6 km, then right turn = South 10 km. The North and South legs (10 km each) cancel out completely, leaving only the 6 km East movement."},
+{q:"A woman walks 8 km West, then 6 km South, then 8 km East. How far and in which direction is she from the start?",
+ opts:["6 km South", "8 km West", "14 km South", "6 km North"], correct:0,
+ exp:"The 8 km West and 8 km East legs cancel each other out exactly. Only the 6 km South leg remains, so she is 6 km South of the start."},
+{q:"A cyclist rides 5 km East, turns left, rides 5 km, turns left again, rides 5 km. Find the distance and direction from the start.",
+ opts:["5 km North", "5 km South", "5 km East", "10 km North"], correct:0,
+ exp:"East 5 km, then left turn = North 5 km, then left turn = West 5 km. The East and West legs cancel out, leaving 5 km North."},
+{q:"Point B is 4 km North of Point A. Point C is 3 km East of Point B. Point D is 4 km South of Point C. Find the distance and direction of D from A.",
+ opts:["3 km East", "3 km West", "7 km East", "4 km North"], correct:0,
+ exp:"A→B is 4 km North, C→D is 4 km South — these cancel out exactly. Only the 3 km East move (B→C) remains, so D is 3 km East of A."},
+{q:"'The company's profits fell sharply this quarter. Several key employees resigned last month.' What is the most likely relationship between these two statements?",
+ opts:["No relation — pure coincidence", "The resignations likely contributed to the falling profits", "The falling profits caused the resignations", "Both are caused by an unrelated third factor with certainty"], correct:1,
+ exp:"Losing key employees can directly hurt productivity and output, which plausibly lowers profits soon after. The timing (resignations happened first) also fits a direct cause-and-effect reading."},
+{q:"'Ice cream sales increase in summer. Drowning incidents also increase in summer.' Does one cause the other?",
+ opts:["Yes — ice cream sales directly cause drownings", "Yes — drownings cause more ice cream buying", "No — both are driven by a common cause (hot weather)", "Cannot be determined from any information"], correct:2,
+ exp:"There's no plausible direct mechanism linking ice cream sales to drowning. Both are more likely driven by a shared underlying cause: hot weather increases both ice cream buying and swimming (and therefore drowning risk)."},
+{q:"In a class, Sara is ranked 12th from the top and 25th from the bottom. How many students are in the class?",
+ opts:["35", "36", "37", "38"], correct:1,
+ exp:"When a rank is known from both ends, Total = (rank from top) + (rank from bottom) − 1, since Sara is counted in both ranks. Total = 12 + 25 − 1 = 36."},
+{q:"In a race: Ali finished ahead of Bilal. Bilal finished ahead of Cara. Dania finished right after Ali but before Bilal. Who finished second?",
+ opts:["Ali", "Dania", "Bilal", "Cara"], correct:1,
+ exp:"The chain gives Ali...Bilal...Cara. Dania finished right after Ali but before Bilal, placing her directly between them: Ali, Dania, Bilal, Cara. Second place is Dania."}
+]
+};
+const SECTION_META = {
+  quantitative: {label:"Quantitative", cls:"quant"},
+  verbal: {label:"Verbal", cls:"verbal"},
+  analytical: {label:"Analytical", cls:"analytical"}
+};
+
+/* ============================ STATE ============================ */
+let selectedSections = new Set(["quantitative","verbal","analytical"]);
+let quizQuestions = [];
+let currentIndex = 0;
+let answers = []; // {section, question, opts, correct, chosen, correctFlag, exp}
+let timerInterval = null;
+let timePerQ = 90;
+let timeLeft = 90;
+
+/* ============================ SETUP SCREEN ============================ */
+const sectionGrid = document.getElementById('sectionGrid');
+function renderSectionGrid(){
+  sectionGrid.innerHTML = '';
+  Object.keys(BANK).forEach(key=>{
+    const meta = SECTION_META[key];
+    const div = document.createElement('div');
+    div.className = 'section-tile ' + meta.cls + (selectedSections.has(key) ? ' active' : '');
+    div.innerHTML = meta.label + '<span class="count">' + BANK[key].length + '</span>';
+    div.onclick = () => {
+      if (selectedSections.has(key)) {
+        if (selectedSections.size > 1) selectedSections.delete(key);
+      } else {
+        selectedSections.add(key);
+      }
+      renderSectionGrid();
+      renderCountOptions();
+    };
+    sectionGrid.appendChild(div);
+  });
+}
+
+const qCountSelect = document.getElementById('qCount');
+function maxAvailable(){
+  let total = 0;
+  selectedSections.forEach(s => total += BANK[s].length);
+  return total;
+}
+function renderCountOptions(){
+  const max = maxAvailable();
+  qCountSelect.innerHTML = '';
+  const options = [10, 15, 20, 25, 30, max].filter((v,i,arr)=> v<=max && v>0 && arr.indexOf(v)===i).sort((a,b)=>a-b);
+  options.forEach(n=>{
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n + (n===max ? ' (all)' : '');
+    qCountSelect.appendChild(opt);
+  });
+  qCountSelect.value = options.includes(15) ? 15 : options[options.length-1];
+}
+renderSectionGrid();
+renderCountOptions();
+
+document.getElementById('startBtn').onclick = startQuiz;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildQuestionSet(forceCount, retryWrongPool){
+  if (retryWrongPool){
+    quizQuestions = shuffle(retryWrongPool);
+    return;
+  }
+  const count = parseInt(forceCount || qCountSelect.value, 10);
+  // Weight analytical heavier: proportional to bank size within selected sections,
+  // but if all three selected, bias toward analytical per the user's request.
+  let pools = {};
+  selectedSections.forEach(s => pools[s] = shuffle(BANK[s]));
+
+  let picks = [];
+  const secList = Array.from(selectedSections);
+  if (secList.length === 1){
+    picks = pools[secList[0]].slice(0, count);
+  } else {
+    // weight ratios: analytical gets ~1.6x share vs others when present
+    let weights = {};
+    let weightSum = 0;
+    secList.forEach(s=>{
+      const w = s === 'analytical' ? 1.6 : 1.0;
+      weights[s] = w;
+      weightSum += w;
+    });
+    let allocated = {};
+    let running = 0;
+    secList.forEach((s,i)=>{
+      let n = Math.round(count * weights[s] / weightSum);
+      allocated[s] = n;
+      running += n;
+    });
+    // adjust rounding drift
+    let diff = count - running;
+    let adjustKey = secList.includes('analytical') ? 'analytical' : secList[0];
+    allocated[adjustKey] += diff;
+
+    secList.forEach(s=>{
+      const n = Math.min(allocated[s], pools[s].length);
+      picks = picks.concat(pools[s].slice(0, n));
+    });
+    // top up if short due to pool caps
+    if (picks.length < count){
+      let leftover = [];
+      secList.forEach(s => leftover = leftover.concat(pools[s].slice(allocated[s])));
+      leftover = shuffle(leftover);
+      picks = picks.concat(leftover.slice(0, count - picks.length));
+    }
+  }
+  quizQuestions = shuffle(picks).slice(0, count);
+}
+
+function startQuiz(retryWrongPool){
+  buildQuestionSet(null, retryWrongPool);
+  if (quizQuestions.length === 0) return;
+  currentIndex = 0;
+  answers = [];
+  document.getElementById('setupCard').style.display = 'none';
+  document.getElementById('resultsCard').style.display = 'none';
+  document.getElementById('quizCard').style.display = 'block';
+  timePerQ = parseFloat(document.getElementById('qTime').value) * 60;
+  renderQuestion();
+}
+
+/* ============================ QUIZ SCREEN ============================ */
+const qPosition = document.getElementById('qPosition');
+const progressFill = document.getElementById('progressFill');
+const qTag = document.getElementById('qTag');
+const qText = document.getElementById('qText');
+const optionsBox = document.getElementById('optionsBox');
+const explainBox = document.getElementById('explainBox');
+const nextBtn = document.getElementById('nextBtn');
+const skipBtn = document.getElementById('skipBtn');
+const timerBox = document.getElementById('timerBox');
+
+function renderQuestion(){
+  clearInterval(timerInterval);
+  const q = quizQuestions[currentIndex];
+  const meta = SECTION_META[q.section];
+  qPosition.textContent = 'Question ' + (currentIndex+1) + ' / ' + quizQuestions.length;
+  progressFill.style.width = ((currentIndex) / quizQuestions.length * 100) + '%';
+  qTag.textContent = meta.label;
+  qTag.className = 'qtag ' + meta.cls;
+  qText.textContent = q.q;
+  explainBox.className = 'explain';
+  explainBox.textContent = '';
+  nextBtn.disabled = true;
+  skipBtn.style.display = 'inline-block';
+  nextBtn.textContent = currentIndex === quizQuestions.length - 1 ? 'Finish test →' : 'Next question →';
+
+  optionsBox.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((optText, i)=>{
+    const div = document.createElement('div');
+    div.className = 'opt';
+    div.innerHTML = '<span class="letter">' + letters[i] + '.</span><span>' + optText + '</span>';
+    div.onclick = () => selectOption(i, div);
+    optionsBox.appendChild(div);
+  });
+
+  if (timePerQ > 0){
+    timeLeft = timePerQ;
+    updateTimerDisplay();
+    timerInterval = setInterval(()=>{
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0){
+        clearInterval(timerInterval);
+        selectOption(-1, null); // timed out
+      }
+    }, 1000);
+  } else {
+    timerBox.textContent = '∞';
+    timerBox.className = 'timer';
+  }
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  timerBox.textContent = (m<10?'0':'')+m + ':' + (s<10?'0':'')+s;
+  timerBox.className = 'timer' + (timeLeft <= 10 ? ' low' : '');
+}
+
+function selectOption(chosenIndex, el){
+  clearInterval(timerInterval);
+  const q = quizQuestions[currentIndex];
+  const opts = optionsBox.querySelectorAll('.opt');
+  opts.forEach((o, i)=>{
+    o.classList.add('disabled');
+    o.onclick = null;
+    if (i === q.correct) o.classList.add('correct');
+    if (i === chosenIndex && chosenIndex !== q.correct) o.classList.add('incorrect');
+    if (i === chosenIndex) o.classList.add('selected');
+  });
+  const isCorrect = chosenIndex === q.correct;
+  explainBox.innerHTML = '<b>' + (chosenIndex === -1 ? "Time's up. " : (isCorrect ? 'Correct. ' : 'Not quite. ')) + '</b>' + q.exp;
+  explainBox.classList.add('show');
+  nextBtn.disabled = false;
+  skipBtn.style.display = 'none';
+
+  answers.push({
+    section: q.section, q: q.q, opts: q.opts, correctIdx: q.correct,
+    chosenIdx: chosenIndex, isCorrect: isCorrect, exp: q.exp
+  });
+}
+
+skipBtn.onclick = () => selectOption(-1, null);
+nextBtn.onclick = () => {
+  currentIndex++;
+  if (currentIndex >= quizQuestions.length){
+    showResults();
+  } else {
+    renderQuestion();
+  }
+};
+
+/* ============================ RESULTS SCREEN ============================ */
+function showResults(){
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('resultsCard').style.display = 'block';
+
+  const total = answers.length;
+  const correctCount = answers.filter(a=>a.isCorrect).length;
+  const skippedCount = answers.filter(a=>a.chosenIdx === -1).length;
+  const pct = Math.round((correctCount/total)*100);
+
+  document.getElementById('scoreBig').textContent = pct + '%';
+  document.getElementById('scoreSub').textContent = correctCount + ' / ' + total + ' correct · ' + skippedCount + ' skipped or timed out';
+
+  // breakdown per section
+  const bd = document.getElementById('breakdown');
+  bd.innerHTML = '';
+  Object.keys(SECTION_META).forEach(key=>{
+    const secAnswers = answers.filter(a=>a.section===key);
+    if (secAnswers.length === 0) return;
+    const secCorrect = secAnswers.filter(a=>a.isCorrect).length;
+    const secPct = Math.round((secCorrect/secAnswers.length)*100);
+    const row = document.createElement('div');
+    row.className = 'bd-row';
+    row.innerHTML = '<div class="bd-label">' + SECTION_META[key].label + '</div>' +
+      '<div class="bd-track"><div class="bd-fill ' + SECTION_META[key].cls + '" style="width:' + secPct + '%"></div></div>' +
+      '<div class="bd-score">' + secCorrect + '/' + secAnswers.length + '</div>';
+    bd.appendChild(row);
+  });
+
+  // verdict + weakest category callout
+  let weakest = null, weakestPct = 101;
+  Object.keys(SECTION_META).forEach(key=>{
+    const secAnswers = answers.filter(a=>a.section===key);
+    if (secAnswers.length === 0) return;
+    const secPct = (secAnswers.filter(a=>a.isCorrect).length/secAnswers.length)*100;
+    if (secPct < weakestPct){ weakestPct = secPct; weakest = key; }
+  });
+  const verdict = document.getElementById('verdict');
+  let msg = '';
+  if (pct >= 80) msg = "Strong result. You're comfortably above the 50% pass mark IM Sciences requires — keep this pace under real exam time pressure.";
+  else if (pct >= 50) msg = "You're at or above the 50/100 pass mark, but there's room to tighten accuracy before test day.";
+  else msg = "Below the 50% pass mark for now — that's normal on early practice runs. Focus drilling on your weakest category below before your next mock.";
+  if (weakest && Object.keys(SECTION_META).length > 1){
+    msg += ' Your weakest area this run: ' + SECTION_META[weakest].label + ' (' + Math.round(weakestPct) + '%). Redo the wrong answers below, or start a fresh mock focused on just that section.';
+  }
+  verdict.textContent = msg;
+
+  // review list
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  answers.forEach((a, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    const chosenText = a.chosenIdx === -1 ? '— (skipped / timed out)' : letters[a.chosenIdx] + '. ' + a.opts[a.chosenIdx];
+    const correctText = letters[a.correctIdx] + '. ' + a.opts[a.correctIdx];
+    div.innerHTML =
+      '<div class="qtag ' + SECTION_META[a.section].cls + '">' + SECTION_META[a.section].label + '</div>' +
+      '<div class="qtext">' + (idx+1) + '. ' + a.q + '</div>' +
+      '<div class="ans-line ' + (a.isCorrect ? 'right' : 'wrong') + '">Your answer: ' + chosenText + '</div>' +
+      (a.isCorrect ? '' : '<div class="ans-line right">Correct answer: ' + correctText + '</div>') +
+      '<div class="exp">' + a.exp + '</div>';
+    reviewList.appendChild(div);
+  });
+}
+
+document.getElementById('reviewToggle').onclick = function(){
+  const list = document.getElementById('reviewList');
+  const showing = list.style.display === 'block';
+  list.style.display = showing ? 'none' : 'block';
+  this.textContent = showing ? 'Show full review ▾' : 'Hide full review ▴';
+};
+
+document.getElementById('retryBtn').onclick = () => {
+  document.getElementById('resultsCard').style.display = 'none';
+  document.getElementById('setupCard').style.display = 'block';
+};
+
+document.getElementById('retryWrongBtn').onclick = () => {
+  const wrongPool = [];
+  answers.forEach(a=>{
+    if (!a.isCorrect){
+      wrongPool.push({section: a.section, q: a.q, opts: a.opts, correct: a.correctIdx, exp: a.exp});
+    }
+  });
+  if (wrongPool.length === 0){
+    alert('No wrong answers to redo — clean sheet!');
+    return;
+  }
+  startQuiz(wrongPool);
+};
+</script>
+</body>
+</html>
