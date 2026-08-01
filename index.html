@@ -570,6 +570,10 @@ const SECTION_META = {
   verbal: {label:"Verbal", cls:"verbal"},
   analytical: {label:"Analytical", cls:"analytical"}
 };
+// Tag every question with its section key so q.section is always defined downstream
+Object.keys(BANK).forEach(sectionKey=>{
+  BANK[sectionKey].forEach(q => { q.section = sectionKey; });
+});
 
 /* ============================ STATE ============================ */
 let selectedSections = new Set(["quantitative","verbal","analytical"]);
@@ -623,7 +627,7 @@ function renderCountOptions(){
 renderSectionGrid();
 renderCountOptions();
 
-document.getElementById('startBtn').onclick = startQuiz;
+document.getElementById('startBtn').onclick = () => startQuiz();
 
 function shuffle(arr){
   const a = arr.slice();
